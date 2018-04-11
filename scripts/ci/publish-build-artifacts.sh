@@ -4,8 +4,6 @@ set -x -u -e -o pipefail
 
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
-source ${thisDir}/_travis-fold.sh
-
 
 # Find the most recent tag that is reachable from the current commit.
 # This is shallow clone of the repo, so we might need to fetch more commits to
@@ -65,7 +63,7 @@ function publishRepo {
 
   # Replace $$ANGULAR_VERSION$$ with the build version.
   BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
-  if [[ ${TRAVIS} ]]; then
+  if [[ ${CI} ]]; then
     find $REPO_DIR/ -type f -name package.json -print0 | xargs -0 sed -i "s/\\\$\\\$ANGULAR_VERSION\\\$\\\$/${BUILD_VER}/g"
 
     # Find umd.js and umd.min.js
@@ -130,7 +128,7 @@ function publishPackages {
 }
 
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${TRAVIS_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishPackages "ssh" dist/packages-dist $CUR_BRANCH
@@ -139,9 +137,8 @@ if [ $# -gt 0 ]; then
   fi
 
 elif [[ \
-    "$TRAVIS_REPO_SLUG" == "angular/angular" && \
-    "$TRAVIS_PULL_REQUEST" == "false" && \
-    "$CI_MODE" == "e2e" ]]; then
+    "$CIRCLE_PR_REPONAME" == "angular/angular" && \
+    "$CIRCLE_PULL_REQUEST" == "" ]]; then
   ORG="angular"
   publishPackages "http" dist/packages-dist $CUR_BRANCH
   if [[ -e dist/packages-dist-es2015 ]]; then
