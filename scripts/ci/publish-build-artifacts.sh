@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -x -u -e -o pipefail
-
+env
 # Setup environment
 readonly thisDir=$(cd $(dirname $0); pwd)
 
