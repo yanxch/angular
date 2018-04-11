@@ -137,8 +137,8 @@ if [ $# -gt 0 ]; then
   fi
 
 elif [[ \
-    "$CIRCLE_PR_REPONAME" == "angular/angular" && \
-    "$CIRCLE_PULL_REQUEST" == "" ]]; then
+    "$CIRCLE_PROJECT_REPONAME" == "angular" && \
+    ! -v CIRCLE_PULL_REQUEST ]]; then
   ORG="angular"
   publishPackages "http" dist/packages-dist $CUR_BRANCH
   if [[ -e dist/packages-dist-es2015 ]]; then
