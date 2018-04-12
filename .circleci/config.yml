@@ -122,7 +122,7 @@ jobs:
       - run:
           name: Decrypt Credentials
           # See ./README.md
-          command: openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git/credentials
+          command: openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring:

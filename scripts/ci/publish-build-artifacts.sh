@@ -66,7 +66,7 @@ function publishRepo {
     (
       # The file .git/credentials is created in the setup of the publish_snapshot job in .circleci/config.yml
       cd $REPO_DIR && \
-      git config credential.helper "store --file=~/.git/credentials"
+      git config credential.helper "store --file=~/.git_credentials"
     )
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
@@ -91,7 +91,7 @@ function publishPackages {
 
   for dir in $PKGS_DIST/*/npm_package
   do
-    COMPONENT="$(basename ${dir})"
+    COMPONENT="$(basename $(dirname ${dir}))"
 
     # Replace _ with - in component name.
     COMPONENT="${COMPONENT//_/-}"
