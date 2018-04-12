@@ -84,6 +84,11 @@ jobs:
       - run: bazel query --output=label //packages/core/... | xargs bazel test
       #- run: bazel query --output=label //... | xargs bazel test
 
+      - persist_to_workspace:
+          root: dist/bin
+          paths:
+            - packages/*/npm_package
+
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
       - store_artifacts:
@@ -110,6 +115,11 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
+      - attach_workspace:
+          at: dist/packages-dist
+      #- run:
+      #    name: Decrypt Credentials
+      #    command: openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git/credentials
       - run: ./scripts/ci/publish-build-artifacts.sh
 
   aio_monitoring:
