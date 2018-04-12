@@ -66,7 +66,7 @@ function publishRepo {
     (
       # The file .git/credentials is created in the setup of the publish_snapshot job in .circleci/config.yml
       cd $REPO_DIR && \
-      git config credential.helper "store --file=.git/credentials"
+      git config credential.helper "store --file=~/.git/credentials"
     )
   fi
   echo `date` > $REPO_DIR/BUILD_INFO
@@ -89,7 +89,7 @@ function publishPackages {
   PKGS_DIST=$2
   BRANCH=$3
 
-  for dir in $PKGS_DIST/*/
+  for dir in $PKGS_DIST/*/npm_package
   do
     COMPONENT="$(basename ${dir})"
 
@@ -127,8 +127,8 @@ elif [[ \
     "$CIRCLE_PROJECT_REPONAME" == "angular" && \
     ! -v CIRCLE_PULL_REQUEST ]]; then
   ORG="angular"
-  ls -R dist/packages-dist
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  ls -R bazel-packages
+  publishPackages "http" bazel-packages $CUR_BRANCH
 
 else
   echo "Not building the upstream/${CUR_BRANCH} branch, build artifacts won't be published."
