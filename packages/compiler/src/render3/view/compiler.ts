@@ -65,13 +65,22 @@ function baseDirectiveFields(
   // e.g 'outputs: {a: 'a'}`
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
 
+  // e.g. `features: [NgOnChangesFeature(MyComponent)]`
+  const features: o.Expression[] = [];
+  if (meta.lifecycle.usesOnChanges) {
+    features.push(o.importExpr(R3.NgOnChangesFeature, null, null).callFn([meta.type]));
+  }
+  if (features.length) {
+    definitionMap.set('features', o.literalArr(features));
+  }
+
   return definitionMap;
 }
 
 /**
  * Compile a directive for the render3 runtime as defined by the `R3DirectiveMetadata`.
  */
-export function compileDirective(
+export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
@@ -84,7 +93,7 @@ export function compileDirective(
 /**
  * Compile a component for the render3 runtime as defined by the `R3ComponentMetadata`.
  */
-export function compileComponent(
+export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
@@ -143,15 +152,6 @@ export function compileComponent(
     definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
   }
 
-  // e.g. `features: [NgOnChangesFeature(MyComponent)]`
-  const features: o.Expression[] = [];
-  if (meta.lifecycle.usesOnChanges) {
-    features.push(o.importExpr(R3.NgOnChangesFeature, null, null).callFn([meta.type]));
-  }
-  if (features.length) {
-    definitionMap.set('features', o.literalArr(features));
-  }
-
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
   const type =
       new o.ExpressionType(o.importExpr(R3.ComponentDef, [new o.ExpressionType(meta.type)]));
@@ -175,7 +175,7 @@ export function compileDirectiveFromRender2(
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
 
   const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
-  const res = compileDirective(meta, outputCtx.constantPool, bindingParser);
+  const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
   // Create the partial class to be merged with the actual class.
   outputCtx.statements.push(new o.ClassStmt(
@@ -211,15 +211,11 @@ export function compileComponentFromRender2(
       hasNgContent: render3Ast.hasNgContent,
       ngContentSelectors: render3Ast.ngContentSelectors,
     },
-    lifecycle: {
-      usesOnChanges:
-          component.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
-    },
     directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
   };
-  const res = compileComponent(meta, outputCtx.constantPool, bindingParser);
+  const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
   // Create the partial class to be merged with the actual class.
   outputCtx.statements.push(new o.ClassStmt(
@@ -250,6 +246,10 @@ function directiveMetadataFromGlobalMetadata(
       attributes: directive.hostAttributes,
       listeners: summary.hostListeners,
       properties: summary.hostProperties,
+    },
+    lifecycle: {
+      usesOnChanges:
+          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
     },
     inputs: directive.inputs,
     outputs: directive.outputs,
@@ -359,8 +359,8 @@ function createHostBindingsFunction(
   for (let index = 0; index < meta.queries.length; index++) {
     const query = meta.queries[index];
 
-    // e.g. r3.qR(tmp = r3.ld(dirIndex)[1]) && (r3.ld(dirIndex)[0].someDir = tmp);
-    const getDirectiveMemory = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
+    // e.g. r3.qR(tmp = r3.d(dirIndex)[1]) && (r3.d(dirIndex)[0].someDir = tmp);
+    const getDirectiveMemory = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
     // The query list is at the query index + 1 because the directive itself is in slot 0.
     const getQueryList = getDirectiveMemory.key(o.literal(index + 1));
     const assignToTemporary = temporary().set(getQueryList);
@@ -376,7 +376,7 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
-  const bindingContext = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
+  const bindingContext = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
   if (bindings) {
     for (const binding of bindings) {
       const bindingExpr = convertPropertyBinding(

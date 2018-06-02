@@ -46,6 +46,7 @@ export interface LView {
    *
    * If `LElementNode`, this is the LView of a component.
    */
+  // TODO(kara): Remove when we have parent/child on TNodes
   readonly node: LViewNode|LElementNode;
 
   /**
@@ -112,17 +113,6 @@ export interface LView {
   lifecycleStage: LifecycleStage;
 
   /**
-   * The first LView or LContainer beneath this LView in the hierarchy.
-   *
-   * Necessary to store this so views can traverse through their nested views
-   * to remove listeners and call onDestroy callbacks.
-   *
-   * For embedded views, we store the LContainer rather than the first ViewState
-   * to avoid managing splicing when views are added/removed.
-   */
-  child: LView|LContainer|null;
-
-  /**
    * The last LView or LContainer beneath this LView in the hierarchy.
    *
    * The tail allows us to quickly add a new state to the end of the view list
@@ -181,14 +171,6 @@ export interface LView {
   context: {}|RootContext|null;
 
   /**
-   * A count of dynamic views that are children of this view (indirectly via containers).
-   *
-   * This is used to decide whether to scan children of this view when refreshing dynamic views
-   * after refreshing the view itself.
-   */
-  dynamicViewCount: number;
-
-  /**
    * Queries active for this view - nodes from a view are reported to those queries
    */
   queries: LQueries|null;
@@ -229,8 +211,8 @@ export const enum LViewFlags {
 /** Interface necessary to work with view tree traversal */
 export interface LViewOrLContainer {
   next: LView|LContainer|null;
-  child?: LView|LContainer|null;
   views?: LViewNode[];
+  tView?: TView;
   parent: LView|null;
 }
 
@@ -241,11 +223,34 @@ export interface LViewOrLContainer {
  * Stored on the template function as ngPrivateData.
  */
 export interface TView {
+  /**
+   * Pointer to the `TNode` that represents the root of the view.
+   *
+   * If this is a `TNode` for an `LViewNode`, this is an embedded view of a container.
+   * We need this pointer to be able to efficiently find this node when inserting the view
+   * into an anchor.
+   *
+   * If this is a `TNode` for an `LElementNode`, this is the TView of a component.
+   */
+  node: TNode;
+
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes. */
   data: TData;
+
+  /**
+   * Index of the host node of the first LView or LContainer beneath this LView in
+   * the hierarchy.
+   *
+   * Necessary to store this so views can traverse through their nested views
+   * to remove listeners and call onDestroy callbacks.
+   *
+   * For embedded views, we store the index of an LContainer's host rather than the first
+   * LView to avoid managing splicing when views are added/removed.
+   */
+  childIndex: number;
 
   /**
    * Selector matches for a node are temporarily cached on the TView so the

@@ -108,7 +108,13 @@
     "name": "getDirectiveInstance"
   },
   {
+    "name": "getLViewChild"
+  },
+  {
     "name": "getOrCreateTView"
+  },
+  {
+    "name": "getParentLNode"
   },
   {
     "name": "getRenderFlags"
@@ -121,6 +127,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "isLContainer"
   },
   {
     "name": "isProceduralRenderer"

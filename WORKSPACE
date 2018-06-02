@@ -6,23 +6,23 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
-    strip_prefix = "rules_nodejs-0.8.0",
-    sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
+    strip_prefix = "rules_nodejs-0.9.1",
+    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
 )
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7.zip",
-    strip_prefix = "rules_webtesting-ca7b8062d9cf4ef2fde9193c7d37a0764c4262d7",
-    sha256 = "28c73cf9d310fa6dba30e66bdb98071341c99c3feb8662f2d3883a632de97d72",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/v0.2.0.zip",
+    strip_prefix = "rules_webtesting-0.2.0",
+    sha256 = "cecc12f07e95740750a40d38e8b14b76fefa1551bef9332cb432d564d693723c",
 )
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/v0.13.0.zip",
-    strip_prefix = "rules_typescript-0.13.0",
-    sha256 = "8f2767ff56ad68c80c62e9a1cdc2ba2c2ba0b19d350f713365e5333045df02e3",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.0.zip",
+    strip_prefix = "rules_typescript-0.15.0",
+    sha256 = "1aa75917330b820cb239b3c10a936a10f0a46fe215063d4492dd76dc6e1616f4",
 )
 
 http_archive(
@@ -66,9 +66,9 @@ http_archive(
 
 http_archive(
     name = "org_brotli",
-    url = "https://github.com/google/brotli/archive/c6333e1e79fb62ea088443f192293f964409b04e.zip",
-    strip_prefix = "brotli-c6333e1e79fb62ea088443f192293f964409b04e",
-    sha256 = "3f781988dee7dd3bcce2bf238294663cfaaf3b6433505bdb762e24d0a284d1dc",
+    url = "https://github.com/google/brotli/archive/f9b8c02673c576a3e807edbf3a9328e9e7af6d7c.zip",
+    strip_prefix = "brotli-f9b8c02673c576a3e807edbf3a9328e9e7af6d7c",
+    sha256 = "8a517806d2b7c8505ba5c53934e7d7c70d341b68ffd268e9044d35b564a48828",
 )
 
 #

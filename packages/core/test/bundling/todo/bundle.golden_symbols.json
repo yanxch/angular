@@ -120,9 +120,6 @@
     "name": "__extends"
   },
   {
-    "name": "__global"
-  },
-  {
     "name": "__read"
   },
   {
@@ -384,10 +381,19 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getChildLNode"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
     "name": "getDirectiveInstance"
+  },
+  {
+    "name": "getLViewChild"
+  },
+  {
+    "name": "getNextLNode"
   },
   {
     "name": "getNextLNodeWithProjection"
@@ -415,6 +421,9 @@
   },
   {
     "name": "getOrCreateTemplateRef"
+  },
+  {
+    "name": "getParentLNode"
   },
   {
     "name": "getParentState"
@@ -484,6 +493,9 @@
   },
   {
     "name": "isJsObject"
+  },
+  {
+    "name": "isLContainer"
   },
   {
     "name": "isListLikeIterable"
@@ -616,9 +628,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "setViewNext"
   },
   {
     "name": "stringify"
