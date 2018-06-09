@@ -42,8 +42,8 @@ export class Formatters {
 
     static compose(formatters: null): null;
     static compose(formatters: (FormatterFn|null|undefined)[]): FormatterFn|null;
-    static compose(parsers: (Formatters|null|undefined)[]|null): Formatters|null {
-        if (!parsers) return null;
+    static compose(formatters: (Formatters|null|undefined)[]|null): Formatters|null {
+        if (!formatters) return null;
         return null;
     }
 }

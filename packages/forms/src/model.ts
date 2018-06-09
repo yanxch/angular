@@ -11,6 +11,7 @@ import {Observable} from 'rxjs';
 import {composeAsyncValidators, composeValidators} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
 import {toObservable} from './validators';
+import { ParserFn, FormatterFn, Formatters } from './converters';
 
 /**
  * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
@@ -148,7 +149,8 @@ export abstract class AbstractControl {
    * @param asyncValidator The function that will determine the asynchronous validity of this
    * control.
    */
-  constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null) {}
+  constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null,
+              public parser: ParserFn|null, public formatter: FormatterFn|null) {}
 
   /**
    * The parent control.
@@ -265,6 +267,10 @@ export abstract class AbstractControl {
    */
   get updateOn(): FormHooks {
     return this._updateOn ? this._updateOn : (this.parent ? this.parent.updateOn : 'change');
+  }
+
+  setFormatters(newFormatter: FormatterFn|FormatterFn[]|null): void {
+    this.formatter = Formatters.compose(newFormatter);
   }
 
   /**
