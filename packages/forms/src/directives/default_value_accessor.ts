@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer2, forwardRef} from '@angular/core';
+import {Directive, ElementRef, Inject, InjectionToken, Optional, Renderer2, forwardRef, Self} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import { NG_FORMATTERS, Formatter, FormatterFn, NG_PARSERS, Parser, ParserFn, Formatters, Parsers } from '../converters';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -50,7 +51,7 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   // selector: '[ngModel],[formControl],[formControlName]',
   host: {
     '(input)': '$any(this)._handleInput($event.target.value)',
-    '(blur)': 'onTouched()',
+    '(blur)': '$any(this)._handleBlur($event.target.value)',
     '(compositionstart)': '$any(this)._compositionStart()',
     '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
   },
@@ -62,10 +63,20 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
+  private _formatter: FormatterFn;
+  private _parser: ParserFn;
 
   constructor(
       private _renderer: Renderer2, private _elementRef: ElementRef,
+      @Optional() @Self() @Inject(NG_FORMATTERS) private _formatters: (Formatter|FormatterFn)[],
+      @Optional() @Self() @Inject(NG_PARSERS) private _parsers: (Parser|ParserFn)[],
       @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
+    this._formatter = Formatters.compose(_formatters || []);
+    this._parser = Parsers.compose(_parsers || []);
+    
+    console.log(this._formatter);
+    console.log(this._parser);
+
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();
     }
@@ -73,7 +84,9 @@ export class DefaultValueAccessor implements ControlValueAccessor {
 
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', normalizedValue);
+    const formattedValue = this._formatter(normalizedValue);
+    console.log('Formatted Value: ' + formattedValue);
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', formattedValue);
   }
 
   registerOnChange(fn: (_: any) => void): void { this.onChange = fn; }
@@ -86,8 +99,18 @@ export class DefaultValueAccessor implements ControlValueAccessor {
   /** @internal */
   _handleInput(value: any): void {
     if (!this._compositionMode || (this._compositionMode && !this._composing)) {
-      this.onChange(value);
+      const parsedValue = this._parser(value);
+      this.writeValue(parsedValue); 
+      console.log('Input - Parsed Value: ' + parsedValue);
+      this.onChange(parsedValue);
     }
+  }
+
+  _handleBlur(value: any): void {
+    const parsedValue = this._parser(value);
+    console.log('Blur - Parsed Value: ' + parsedValue);
+    this.writeValue(parsedValue);
+    this.onTouched();
   }
 
   /** @internal */

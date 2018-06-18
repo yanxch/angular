@@ -38,8 +38,9 @@ const BaseConfig = {
 
 if (platform == 'node') {
   const specFiles = [
-    '@angular/**/*_spec.js', '@angular/compiler-cli/test/**/*_spec.js',
-    '@angular/benchpress/test/**/*_spec.js'
+    '@angular/**/converters_spec.js'
+    //'@angular/compiler-cli/test/**/*_spec.js',
+    //'@angular/benchpress/test/**/*_spec.js'
   ];
   tscWatch = new TscWatch(Object.assign(
       {

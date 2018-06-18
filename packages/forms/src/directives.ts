@@ -25,6 +25,7 @@ import {FormArrayName, FormGroupName} from './directives/reactive_directives/for
 import {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 import {NgSelectMultipleOption, SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 import {CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator} from './directives/validators';
+import {SpacesFormatter, SpacesParser} from './directives/converters';
 
 export {CheckboxControlValueAccessor} from './directives/checkbox_value_accessor';
 export {ControlValueAccessor} from './directives/control_value_accessor';
@@ -63,6 +64,8 @@ export const SHARED_FORM_DIRECTIVES: Type<any>[] = [
   PatternValidator,
   CheckboxRequiredValidator,
   EmailValidator,
+  SpacesFormatter,
+  SpacesParser
 ];
 
 export const TEMPLATE_DRIVEN_DIRECTIVES: Type<any>[] = [NgModel, NgModelGroup, NgForm];

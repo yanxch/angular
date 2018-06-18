@@ -44,7 +44,7 @@ function asyncValidator(expected: any, timeout = 0) {
   describe('Form Directives', () => {
     let defaultAccessor: DefaultValueAccessor;
 
-    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null !, null !, null !); });
+    beforeEach(() => { defaultAccessor = new DefaultValueAccessor(null !, null !, null !, null !, null !); });
 
     describe('shared', () => {
       describe('selectValueAccessor', () => {
